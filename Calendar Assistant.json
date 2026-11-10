@@ -1,0 +1,169 @@
+{
+  "name": "Calendar Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -240,
+        -96
+      ],
+      "id": "ce7c1fd4-7301-4900-ae19-dee1a666e92b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Look at my events/meetings for the day and send me a nicely formatted html email to manlivk.1804@gmail.com on the top two most important events of the day and tell me why. Look at event title, description, attendees to find this out.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        -96
+      ],
+      "id": "221b41e9-e1fc-4d29-a3ee-d89b7fd9d221",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        112
+      ],
+      "id": "631da062-0cce-46c0-b2bb-75b909bfa931",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "VjGuQaaEKstrYF1i",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        64
+      ],
+      "id": "00181a4b-3a66-49f3-b8c2-898696321893",
+      "name": "Send a message in Gmail",
+      "webhookId": "41a3f8f0-5341-4878-9416-e287e1a83117",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZOsIqQJnLwdJNRo6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "a8752970dfe1f1ed40afeda5e5abbc0f5cd34868494642501ae3dad6594844d6@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n Practice"
+        },
+        "timeMax": "={{ $now.plus({ day: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        112
+      ],
+      "id": "34a5053d-0303-4475-95e9-db46547c315c",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "1YTqSPg1BqzmxbHf",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "51215e47-1a6d-4fc9-b12c-ca40234342cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a39af4e798e2cff51d6908825eff5a2d7d6d09dfa30f58491cbbf5db7782b80"
+  },
+  "nodeGroups": [],
+  "id": "kBTXZhmjMTNFtRTw",
+  "tags": []
+}
